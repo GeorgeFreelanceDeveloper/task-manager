@@ -33,11 +33,7 @@ public class Main {
                 case "add"      -> addTask(scanner);
                 case "remove"   -> removeTask(scanner);
                 case "list"     -> listTasks();
-                case "exit"     -> {
-                    System.out.println(ConsoleColors.RED + "Exiting program..." + ConsoleColors.RESET);
-                    exit();
-                    return;
-                }
+                case "exit"     -> exit();
                 default -> System.out.println(ConsoleColors.RED + "Invalid Input!" + ConsoleColors.RESET);
             }
         }
@@ -158,6 +154,7 @@ public class Main {
     }
 
     private static void exit() {
+        System.out.println(ConsoleColors.RED + "Exiting program..." + ConsoleColors.RESET);
         scanner.close();
         saveTask();
         removeNewlines(taskFile);
