@@ -14,42 +14,36 @@ import java.util.stream.Collectors;
 public class Main {
     static String[][] tasks;
     static String taskFile = "tasks.csv";
+    static Scanner scanner = new Scanner(System.in);
+    private static final String[] optionsArray = {"add","remove","list","exit"};
 
     // Hlavni menu aplikace
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        removeNewlines(taskFile);
+        try {
+            loadTasks(taskFile);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+            e.printStackTrace(System.err);
+            return;
+        }
         while (true) {
-            try {
-                loadData(taskFile);
-            } catch (IOException e) {
-                System.out.println("Error reading file: " + e.getMessage());
-                return;
-            }
-            options();
-            String input = scanner.nextLine();
-            switch (input) {
-                case "add":
-                    addTask(scanner);
-                    System.out.println("toto je add");
-                    break;
-                case "remove":
-                    removeTask(scanner);
-                    break;
-                case "list":
-                    listTasks();
-                    break;
-                case "exit":
+            displayOptions();
+            switch (scanner.nextLine().toLowerCase()) {
+                case "add"      -> addTask(scanner);
+                case "remove"   -> removeTask(scanner);
+                case "list"     -> listTasks();
+                case "exit"     -> {
                     System.out.println(ConsoleColors.RED + "Exiting program..." + ConsoleColors.RESET);
+                    exit();
                     return;
-                default:
-                    System.out.println(ConsoleColors.RED + "Invalid Input!" + ConsoleColors.RESET);
-                    break;
+                }
+                default -> System.out.println(ConsoleColors.RED + "Invalid Input!" + ConsoleColors.RESET);
             }
         }
     }
 
-    public static void options() {
-        String[] optionsArray = {"add","remove","list","exit"};
+    public static void displayOptions() {
         System.out.println(ConsoleColors.BLUE + "Please select an option:" + ConsoleColors.RESET);
         for (String option : optionsArray) {
             System.out.println(option);
@@ -57,7 +51,7 @@ public class Main {
     }
 
     //Logika nacitani dat ze souboru do arraye, volam pokazde, kdyz se resetuje while loop v main
-    public static void loadData(String filePath) throws IOException {
+    public static void loadTasks(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         int rowCount = 0;
         while (reader.readLine() != null) {
@@ -101,14 +95,10 @@ public class Main {
             }
         }
 
-        removeNewlines(taskFile);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(taskFile, true))) {
-            writer.newLine();
-            writer.write(name + ", " + date + ", " + isCompleted);
-            System.out.println(ConsoleColors.GREEN + "Task added successfully" + ConsoleColors.RESET);
-        } catch (IOException e) {
-            System.out.println(ConsoleColors.RED + "Error writing to file: " + e.getMessage() + ConsoleColors.RESET);
-        }
+        String[] newTask = {name, date, isCompleted};
+        tasks = Arrays.copyOf(tasks, tasks.length + 1);
+        tasks[tasks.length - 1] = newTask;
+        System.out.println(ConsoleColors.GREEN + "Task added successfully" + ConsoleColors.RESET);
     }
 
     public static void listTasks() {
@@ -133,7 +123,6 @@ public class Main {
             System.out.println((i + 1) + " - " + tasks[i][0]);
         }
 
-        removeNewlines(taskFile);
         int taskIndex = -1;
         try {
             taskIndex = Integer.parseInt(scanner.nextLine()) - 1;
@@ -145,35 +134,50 @@ public class Main {
                 tasks[i] = tasks[i + 1];
             }
             tasks = Arrays.copyOf(tasks, tasks.length - 1);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(taskFile))) {
-                for (int i = 0; i < tasks.length; i++) {
-                    writer.write(tasks[i][0] + ", " + tasks[i][1] + ", " + tasks[i][2]);
-                    if (i < tasks.length - 1) {
-                        writer.newLine();
-                    }
-                }
-                System.out.println(ConsoleColors.GREEN + "Task removed successfully" + ConsoleColors.RESET);
-            } catch (IOException e) {
-                System.out.println(ConsoleColors.RED + "Error writing to file: " + e.getMessage() + ConsoleColors.RESET);
-            }
+            System.out.println(ConsoleColors.GREEN + "Task removed successfully" + ConsoleColors.RESET);
         } catch (NumberFormatException e) {
             System.out.println(ConsoleColors.RED + "Invalid input, please enter a valid task number" + ConsoleColors.RESET);
         }
     }
 
-    //V kodu nemuze dojit, ze by zustal radek prazdny v csv souboru, pridano, kdyby doslo v souboru k rucni uprave.
+    private static void saveTask() {
+        final var sb = new StringBuilder();
+
+        for (var task : tasks) {
+            sb.append(String.join(", ", task));
+            sb.append("\n");
+        }
+
+        try {
+            Files.writeString(Path.of(taskFile), sb.toString());
+        } catch (IOException e) {
+            System.err.println("Failed to save " + taskFile);
+            e.printStackTrace(System.err);
+        }
+
+    }
+
+    private static void exit() {
+        scanner.close();
+        saveTask();
+        removeNewlines(taskFile);
+        System.exit(0);
+    }
+
+    //Odebere prazdne radky, pokud je tam uzivatel pri rucnim editu prida a odebere posledni volny radek.
     public static void removeNewlines(String filePath) {
         try {
             Path path = Path.of(filePath);
             List<String> lines = Files.readAllLines(path);
-            boolean hasEmptyLines = lines.stream().anyMatch(line -> line.trim().isEmpty());
-            if (hasEmptyLines) {
-                List<String> filteredLines = lines.stream().filter(line -> !line.trim().isEmpty()).collect(Collectors.toList());
-                String noEmptyLines = String.join(System.lineSeparator(), filteredLines);
-                Files.writeString(path, noEmptyLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+            List<String> filteredLines = lines.stream().filter(line -> !line.trim().isEmpty()).collect(Collectors.toList());
+            if (!filteredLines.isEmpty() && filteredLines.get(filteredLines.size() - 1).isEmpty()) {
+                filteredLines.remove(filteredLines.size() - 1);
             }
+            String noEmptyLines = String.join(System.lineSeparator(), filteredLines);
+            Files.writeString(path, noEmptyLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             System.err.println("Error processing file: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 }
