@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        tasks = dataRetrieve("tasks.csv");
+        tasks = loadDataToTab("tasks.csv");
         options();
         var input = new Scanner(System.in);
         while (input.hasNextLine()) {
@@ -55,7 +55,7 @@ public class Main {
         System.out.println(ConsoleColors.RESET);
     }
 
-    public static String[][] dataRetrieve(String fileName) {
+    public static String[][] loadDataToTab(String fileName) {
         Path file = Paths.get(fileName);
         String[][] dataTab = null;
 
