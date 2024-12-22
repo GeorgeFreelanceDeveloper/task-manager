@@ -1,6 +1,6 @@
 package org.example;
 
-/**
+/*
  * https://stackoverflow.com/a/45444716
  */
 public class ConsoleColors {
