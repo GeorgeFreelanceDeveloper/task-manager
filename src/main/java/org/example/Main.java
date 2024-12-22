@@ -12,44 +12,38 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    static String[][] tasks;
+    static final String[] OPTIONS = {"add", "remove", "list", "exit"};
+    private static String[][] tasks;
+    private static Scanner scanner;
 
     public static void main(String[] args) {
 
         tasks = loadDataToTab("tasks.csv");
-        options();
-        var input = new Scanner(System.in);
-        while (input.hasNextLine()) {
-            var option = input.nextLine();
+        displayOptions();
+        scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            final var option = scanner.nextLine();
             switch (option) {
-                case "exit":
+                case "add" -> addTask();
+                case "remove"-> removeTask();
+                case "list" -> taskList();
+                case "exit" -> {
                     storeData();
                     System.out.println("Data were stored successfully");
                     System.out.println(ConsoleColors.RED + "Sayonara!");
                     System.exit(0);
-                    break;
-                case "add":
-                    addTask();
-                    break;
-                case "remove":
-                    removeTask();
-                    break;
-                case "list":
-                    taskList();
-                    break;
-                default:
-                    System.out.println("Invalid option");
+                }
+                default -> System.out.println("Invalid option");
             }
-            options();
+            displayOptions();
         }
-        System.out.println(Arrays.deepToString(tasks));
+        scanner.close();
     }
 
-    public static void options() {
-        String[] options = {"add", "remove", "list", "exit"};
+    public static void displayOptions() {
         System.out.println(ConsoleColors.BLUE);
         System.out.println("Please select the option for task manager:");
-        for (var option : options) {
+        for (var option : OPTIONS) {
             System.out.println(ConsoleColors.BLUE + option);
         }
         System.out.println(ConsoleColors.RESET);
@@ -57,10 +51,11 @@ public class Main {
 
     public static String[][] loadDataToTab(String fileName) {
         Path file = Paths.get(fileName);
-        String[][] dataTab = null;
+        String[][] dataTab;
 
         if (!Files.exists(file)) {
             System.out.println("File does not exist.");
+            System.err.println("-1");
             System.exit(0);
         }
         try {
@@ -70,23 +65,23 @@ public class Main {
                 dataTab[i] = lines.get(i).split(",");
                 System.arraycopy(lines.get(i).split(","), 0, dataTab[i], 0, dataTab[i].length);
             }
+            return dataTab;
         } catch (IOException e) {
             System.err.println("Error reading file.");
+            System.err.println("-1");
             e.printStackTrace(System.err);
+            return null;
         }
-        return dataTab;
     }
 
     public static void addTask() {
-
-        var input = new Scanner(System.in);
         System.out.println("Please enter the task description:");
-        var taskDescription = input.nextLine();
+        final var taskDescription = scanner.nextLine();
         System.out.println("Then, please enter the due date:");
-        var dueDate = input.nextLine();
+        final var dueDate = scanner.nextLine();
         System.out.println("And lastly, please enter the importance of the task (true/false):");
-        var importance = input.nextLine();
-
+        final var importance = scanner.nextLine();
+        scanner.close();
 
         tasks = Arrays.copyOf(tasks, tasks.length +1);
         tasks[tasks.length-1] = new String[3];
@@ -106,9 +101,9 @@ public class Main {
     }
 
     public static void removeTask() {
-        var input = new Scanner(System.in);
         System.out.println("Please enter the number of the task you would like to remove:");
-        var taskNumber = input.nextLine();
+        var taskNumber = scanner.nextLine();
+        scanner.close();
         int index;
         if (NumberUtils.isParsable(taskNumber)) {
             index = Integer.parseInt(taskNumber);
@@ -131,13 +126,13 @@ public class Main {
 
     public static void storeData() {
         Path file = Paths.get("tasks.csv");
-        String[] line = new String[tasks.length];
+        String[] lines = new String[tasks.length];
 
         for (int i = 0; i < tasks.length; i++) {
-            line[i] = String.join(",", tasks[i]);
+            lines[i] = String.join(",", tasks[i]);
         }
         try {
-            Files.write(file, Arrays.asList(line));
+            Files.write(file, Arrays.asList(lines));
         } catch (IOException e) {
             System.err.println("Error writing file.");
             e.printStackTrace(System.err);
