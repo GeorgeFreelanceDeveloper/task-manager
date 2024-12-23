@@ -8,13 +8,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-import static pl.coderslab.ConsoleColors.*;
+import static org.example.ConsoleColors.*;
 
 public class Main {
-    static Scanner scan;
+    private static Scanner scan;
     private static String[][] tasks;
 
     public static void main(String[] args) {
@@ -94,26 +96,44 @@ public class Main {
     private static void addTask() {
         final var sizeTaskData = 3;
         int taskNum = tasks.length + 1;
-        String[] task = new String[sizeTaskData];
+        final String[] task = new String[sizeTaskData];
 
         System.out.printf("\n%sAdding new task Number.%d:%s\n", GREEN_BOLD_BRIGHT, taskNum, RESET);
         System.out.printf("%sWrite the description of the task:%s ", BLUE_BOLD_BRIGHT, RESET);
         task[0] = scan.nextLine();
 
-        System.out.printf("%sWrite the deadline of the task -in the format YYYY-MM-DD:%s ", BLUE_BOLD_BRIGHT, RESET);
-
-        task[1] = " %s".formatted(scan.nextLine());//because space after comma
+        System.out.printf("%sWrite the date when task end -in the format %sYYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT,BLUE_BOLD_BRIGHT, RESET);
+        task[1] = " %s".formatted(dateChecker());//because space after comma
 
         System.out.printf("%sWrite \"%strue%s\" or \"%sfalse%s\" if task is important or not:%s ", BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         while (!scan.hasNext("true") && !scan.hasNext("false")) {
             scan.nextLine();
-            System.out.printf("%sInvalid option - put only %strue%s or %sfalse%s:%s ", RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
+            System.out.printf("\n%sInvalid option - put only %strue%s or %sfalse%s:%s ", RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
         }
         task[2] = " %s".formatted(scan.nextLine());
         tasks = ArrayUtils.add(tasks, task);
         System.out.printf("%sTask  Number %d added%s\n", GREEN_BOLD_BRIGHT, taskNum, RESET);
     }
 
+    //my method for controlling if string is in right format and the date is at least today
+    private static String dateChecker() {
+        var today = LocalDate.now();
+        String dateStr;
+        do try {
+            dateStr = scan.nextLine();
+            var date = LocalDate.parse(dateStr);
+            if (!date.isBefore(today)) {//date must be at least today if so loop end
+                break;
+            }
+            System.out.printf("%sThis date already was!!%s\n", RED_BOLD_BRIGHT,RESET);
+            System.out.printf("\n%sWrite date which is at least %sToday:%s ", BLUE_BOLD_BRIGHT,RED_BOLD_BRIGHT, RESET);
+        } catch (DateTimeParseException e) {
+            System.out.printf("%sInvalid date format!! %s\n", RED_BOLD_BRIGHT, RESET);
+            System.out.printf("\n%sWrite date in the format %sYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
+        }
+        while (true);
+        return dateStr;
+    }
 
     private static void removeTask() {
         System.out.printf("\n%sWrite the number of the task you want to remove from the list%s\n", BLUE_BOLD_BRIGHT, RESET);
