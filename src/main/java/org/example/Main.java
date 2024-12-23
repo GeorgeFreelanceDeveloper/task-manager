@@ -82,8 +82,9 @@ public class Main {
 
     private static void showTasks() {
         System.out.printf("\n%sTask List:%s\n", GREEN_BOLD_BRIGHT, RESET);
+        String[] task;
         for (int i = 0; i < tasks.length; i++) {//this loop controlling if task is important or not for different colors in output
-            var task = tasks[i];
+            task = tasks[i];
             switch (task[2].trim()) {
                 case "true" ->
                         System.out.printf("%s%d. %s%s%s\n", GREEN_BOLD_BRIGHT, i + 1, RED_BOLD_BRIGHT, String.join(",", task), RESET);
@@ -95,7 +96,7 @@ public class Main {
 
     private static void addTask() {
         final var sizeTaskData = 3;
-        int taskNum = tasks.length + 1;
+        final int taskNum = tasks.length + 1;
         final String[] task = new String[sizeTaskData];
 
         System.out.printf("\n%sAdding new task Number.%d:%s\n", GREEN_BOLD_BRIGHT, taskNum, RESET);
@@ -119,9 +120,11 @@ public class Main {
     private static String dateChecker() {
         final var today = LocalDate.now();
         String input;
+        LocalDate date;
+
         do try {
             input = scan.nextLine();
-            final var date = LocalDate.parse(input);
+            date = LocalDate.parse(input);
             if (!date.isBefore(today)) {//date must be at least today if so loop end
                 break;
             }
@@ -136,10 +139,12 @@ public class Main {
     }
 
     private static void removeTask() {
+        String input;
+
         System.out.printf("\n%sWrite the number of the task you want to remove from the list%s\n", BLUE_BOLD_BRIGHT, RESET);
         System.out.printf("%sif you don't know the number of the task write \"%s?%s\" or \"%sexit%s\" to return to the main menu:%s", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         do {
-            String input = scan.nextLine().toLowerCase();
+            input = scan.nextLine().toLowerCase();
             if (NumberUtils.isDigits(input)) {
                 int num = Integer.parseInt(input);//
                 if (num >= 1 && num <= tasks.length) {
@@ -162,7 +167,8 @@ public class Main {
     }
 
     private static void saveTask() {
-        Path pathFile = Paths.get("tasks.csv");
+        final Path pathFile = Paths.get("tasks.csv");
+
         if (Files.exists(pathFile)) {
             final var data = new StringBuilder();
             for (String[] task : tasks) {
@@ -180,7 +186,8 @@ public class Main {
     }
 
     private static String[][] listTo2DArr(List<String> list) {
-        String[][] arr = new String[list.size()][3];
+        final String[][] arr = new String[list.size()][3];
+
         for (int i = 0; i < list.size(); i++) {
             arr[i] = list.get(i).split(",");
         }
