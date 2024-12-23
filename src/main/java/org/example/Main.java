@@ -108,10 +108,11 @@ public class Main {
 
         System.out.printf("%sWrite \"%strue%s\" or \"%sfalse%s\" if task is important or not:%s ", BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         while (!scan.hasNext("true") && !scan.hasNext("false")) {
-            scan.nextLine();
+            scan.nextLine();//for cleaning buffer before new try
             System.out.printf("\n%sInvalid option - put only %strue%s or %sfalse%s:%s ", RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
         }
-        task[2] = " %s".formatted(scan.nextLine());
+        task[2] = " %s".formatted(scan.next());//next only because if somebody write something after trze/false then would catch also
+        scan.nextLine();//cleaning buffer
         tasks = ArrayUtils.add(tasks, task);
         System.out.printf("%sTask  Number %d added%s\n", GREEN_BOLD_BRIGHT, taskNum, RESET);
     }
