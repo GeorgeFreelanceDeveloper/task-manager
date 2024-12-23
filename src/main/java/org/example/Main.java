@@ -42,9 +42,9 @@ public class Main {
 
     //loading tasks from file checking errors in case of missing file try to create new for smooth continue.
     private static String[][] loadTasks() {
+        final Path pathToFile = Paths.get("tasks.csv");
+        tasks = new String[0][];//here will be tasks data
         System.out.printf("%sSystem will now read all the tasks from the task.csv file%s\n", YELLOW_BOLD_BRIGHT, RESET);
-        Path pathToFile = Paths.get("tasks.csv");
-        String[][] tasks = new String[0][];//here will be tasks data
         try {
             if (Files.exists(pathToFile)) {
                 tasks = listTo2DArr(Files.readAllLines(pathToFile));
@@ -102,7 +102,7 @@ public class Main {
         System.out.printf("%sWrite the description of the task:%s ", BLUE_BOLD_BRIGHT, RESET);
         task[0] = scan.nextLine();
 
-        System.out.printf("%sWrite the date when task end -in the format %sYYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT,BLUE_BOLD_BRIGHT, RESET);
+        System.out.printf("%sWrite the date when task end -in the format %sYYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         task[1] = " %s".formatted(dateChecker());//because space after comma
 
         System.out.printf("%sWrite \"%strue%s\" or \"%sfalse%s\" if task is important or not:%s ", BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
@@ -117,22 +117,22 @@ public class Main {
 
     //my method for controlling if string is in right format and the date is at least today
     private static String dateChecker() {
-        var today = LocalDate.now();
-        String dateStr;
+        final var today = LocalDate.now();
+        String input;
         do try {
-            dateStr = scan.nextLine();
-            var date = LocalDate.parse(dateStr);
+            input = scan.nextLine();
+            final var date = LocalDate.parse(input);
             if (!date.isBefore(today)) {//date must be at least today if so loop end
                 break;
             }
-            System.out.printf("%sThis date already was!!%s\n", RED_BOLD_BRIGHT,RESET);
-            System.out.printf("\n%sWrite date which is at least %sToday:%s ", BLUE_BOLD_BRIGHT,RED_BOLD_BRIGHT, RESET);
+            System.out.printf("%sThis date already was!!%s\n", RED_BOLD_BRIGHT, RESET);
+            System.out.printf("\n%sWrite date which is at least %sToday:%s ", BLUE_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
         } catch (DateTimeParseException e) {
             System.out.printf("%sInvalid date format!! %s\n", RED_BOLD_BRIGHT, RESET);
             System.out.printf("\n%sWrite date in the format %sYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         }
         while (true);
-        return dateStr;
+        return input;
     }
 
     private static void removeTask() {
