@@ -1,7 +1,6 @@
 package org.example;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.example.ConsoleColors;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -17,12 +16,10 @@ public class Main {
     public static void main(String[] args) {
         scanner = new Scanner(System.in);
         tasks = readTasks();
-        String input;
-        do {
-            displayUserOptions();
-            input = scanner.nextLine().toLowerCase();
 
-            switch (input) {
+        while (true) {
+            displayUserOptions();
+            switch (scanner.nextLine().toLowerCase()) {
                 case "add":
                     tasks = addTask();
                     break;
@@ -38,7 +35,7 @@ public class Main {
                 default:
                     System.err.println("Please select a correct option!");
             }
-        } while (!input.equalsIgnoreCase("exit"));
+        }
     }
 
     public static void displayUserOptions() {
@@ -136,14 +133,18 @@ public class Main {
     public static void saveTasksToFile() {
         final var path = Paths.get("tasks.csv");
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
-            for (int i = 0; i < tasks.length; i++) {
-                writer.write(tasks[i][0] + "," + tasks[i][1] + "," + tasks[i][2]);
-                writer.newLine();
-            }
+        final var sb = new StringBuilder();
+
+        for (var task : tasks) {
+            sb.append(String.join(", ", task));
+            sb.append("\n");
+        }
+
+        try {
+            Files.writeString(path, sb.toString());
         } catch (IOException e) {
-            System.err.println("ERROR: I/O error while writing file!");
-            e.printStackTrace();
+            System.err.println("Failed to save tasks.csv");
+            e.printStackTrace(System.err);
         }
     }
 
