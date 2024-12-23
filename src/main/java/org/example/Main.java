@@ -12,6 +12,7 @@ public class Main {
 
     private static String[][] tasks;
     private static Scanner scanner;
+    static final String[] OPTIONS = {"add", "remove", "list", "exit"};
 
     public static void main(String[] args) {
         scanner = new Scanner(System.in);
@@ -20,28 +21,18 @@ public class Main {
         while (true) {
             displayUserOptions();
             switch (scanner.nextLine().toLowerCase()) {
-                case "add":
-                    tasks = addTask();
-                    break;
-                case "remove":
-                    tasks = removeTask();
-                    break;
-                case "list":
-                    listTasks();
-                    break;
-                case "exit":
-                    exitTasks();
-                    break;
-                default:
-                    System.err.println("Please select a correct option!");
+                case "add" -> tasks = addTask();
+                case "remove" -> tasks = removeTask();
+                case "list" -> listTasks();
+                case "exit" -> exitTasks();
+                default -> System.err.println("Please select a correct option!");
             }
         }
     }
 
     public static void displayUserOptions() {
         System.out.println(ConsoleColors.BLUE_BOLD_BRIGHT + "Please select an option from the following:" + ConsoleColors.RESET);
-        String[] options = {"add", "remove", "list", "exit"};
-        for (String option : options) {
+        for (String option : OPTIONS) {
             System.out.println(ConsoleColors.WHITE_BRIGHT + option + ConsoleColors.RESET);
         }
         System.out.println(ConsoleColors.BLUE_BRIGHT + "Type in the selected option:" + ConsoleColors.RESET);
@@ -112,7 +103,7 @@ public class Main {
 
         while (true) {
             if (scanner.hasNextInt()) {
-                int taskIndex = scanner.nextInt();
+                final int taskIndex = scanner.nextInt();
                 scanner.nextLine();
                 if (taskIndex > 0 && taskIndex <= tasks.length) {
                     tasks = ArrayUtils.remove(tasks, taskIndex - 1);
