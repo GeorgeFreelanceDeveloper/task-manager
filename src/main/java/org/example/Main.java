@@ -58,8 +58,25 @@ public class Main {
     public static String[][] addTask() {
         System.out.println(ConsoleColors.GREEN_BOLD_BRIGHT + "Please enter the description of the task including importance: " + ConsoleColors.RESET);
         final String description = scanner.nextLine();
-        System.out.println(ConsoleColors.GREEN_BOLD_BRIGHT + "Please enter the deadline(YYYY-MM-DD): " + ConsoleColors.RESET);
-        final String deadline = scanner.nextLine();
+
+        String deadline;
+        while (true) {
+            System.out.println(ConsoleColors.GREEN_BOLD_BRIGHT + "Please enter the deadline(YYYY-MM-DD): " + ConsoleColors.RESET);
+            deadline = scanner.nextLine();
+            if (deadline.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+                final String[] splitDate = deadline.split("-");
+                final var month = Integer.parseInt(splitDate[1]);
+                final var day = Integer.parseInt(splitDate[2]);
+                if ((month >= 1 && month <= 12) && (day >= 1 && day <= 31)) {
+                    break;
+                } else {
+                    System.err.println("Please enter a valid month(1-12) or a valid day(1-31)");
+                }
+            } else {
+                System.err.println("Invalid format! Please use YYYY-MM-DD format!");
+            }
+        }
+
         Boolean done = null;
         while (done == null) {
             System.out.println(ConsoleColors.GREEN_BOLD_BRIGHT + "Please enter true if the task is done or enter false if it is yet to be done: " + ConsoleColors.RESET);
