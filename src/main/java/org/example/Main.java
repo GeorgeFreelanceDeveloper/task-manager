@@ -106,7 +106,7 @@ public class Main {
             scanner.nextLine();//for cleaning buffer before new try
             System.out.printf("\n%sInvalid option - put only %strue%s or %sfalse%s:%s ", RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
         }
-        task[2] = " %s".formatted(scanner.next());//next only because if somebody write something after trze/false then would catch also
+        task[2] = " %s".formatted(scanner.next());//next only because if somebody write something after true/false then would catch also
         scanner.nextLine();//cleaning buffer
         tasks = ArrayUtils.add(tasks, task);
         System.out.printf("%sTask  Number %d added%s\n", GREEN_BOLD_BRIGHT, taskNum, RESET);
@@ -160,27 +160,24 @@ public class Main {
         } while (true);
     }
 
-    private static void saveTask() {
+    private static void saveTasks() {
         final Path pathFile = Paths.get("tasks.csv");
-
-        if (Files.exists(pathFile)) {
-            final var data = new StringBuilder();
-            for (String[] task : tasks) {
-                for (int i = 0; i < task.length - 1; i++) {
-                    data.append(task[i]).append(",");
-                }
-                data.append(task[task.length - 1]).append(System.lineSeparator());//after last part shouldn't be "," but only lineSeparator
+        final var sb = new StringBuilder();
+        for (String[] task : tasks) {
+            for (int i = 0; i < task.length - 1; i++) {
+                sb.append(task[i]).append(",");
             }
-            try {
-                Files.writeString(pathFile, data);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            sb.append(task[task.length - 1]).append(System.lineSeparator());//after last part shouldn't be "," but only lineSeparator
+        }
+        try {
+            Files.writeString(pathFile, sb);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     private static void exit() {
-        saveTask();
+        saveTasks();
         scanner.close();
         System.exit(0);
     }
