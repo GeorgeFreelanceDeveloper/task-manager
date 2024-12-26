@@ -21,7 +21,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.printf("%sStarting Task Manager 1.0%s\n", GREEN_BOLD_BRIGHT, RESET);
-        tasks = loadTasks();
+        loadTasks();
         scan = new Scanner(System.in);
         boolean isEnd = false;//flag for ending main loop
         displayMenu();
@@ -41,7 +41,7 @@ public class Main {
     }
 
     //loading tasks from file checking errors in case of missing file try to create new for smooth continue.
-    private static String[][] loadTasks() {
+    private static void loadTasks() {
         final Path pathToFile = Paths.get("tasks.csv");
         tasks = new String[0][];//here will be tasks data
         System.out.printf("%sSystem will now read all the tasks from the task.csv file%s\n", YELLOW_BOLD_BRIGHT, RESET);
@@ -55,7 +55,6 @@ public class Main {
                 Files.createFile(pathToFile);
                 System.out.printf("%sFile tasks.csv successfully created%s\n", GREEN_BOLD_BRIGHT, RESET);
             }
-            return tasks;
         } catch (IOException e) {
             System.err.println("Error while reading tasks.csv file");
             e.printStackTrace(System.err);
@@ -67,7 +66,6 @@ public class Main {
             }
             System.out.printf("%sFile tasks.csv successfully created%s\n", GREEN_BOLD_BRIGHT, RESET);
         }
-        return tasks;
     }
 
     private static void displayMenu() {
