@@ -172,7 +172,9 @@ public class Main {
         try {
             Files.writeString(pathFile, sb);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("failed to save tasks.csv!");
+            e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 
