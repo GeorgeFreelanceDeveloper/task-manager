@@ -22,22 +22,19 @@ public class Main {
     public static void main(String[] args) {
         System.out.printf("%sStarting Task Manager 1.0%s\n", GREEN_BOLD_BRIGHT, RESET);
         loadTasks();
-        scan = new Scanner(System.in);
-        boolean isEnd = false;//flag for ending main loop
         displayMenu();
+        scan = new Scanner(System.in);
         do {
             System.out.printf("\n%sPlease enter your choice:%s", BLUE_BOLD_BRIGHT, RESET);
             switch (scan.nextLine().toLowerCase()) {
                 case "add" -> addTask();
                 case "remove" -> removeTask();
                 case "list" -> showTasks();
-                case "exit" -> isEnd = true;
+                case "exit" -> exit();
                 case "?" -> displayMenu();
                 default -> System.out.printf("%sInvalid option!%s", RED_BOLD_BRIGHT, RESET);
             }
-        } while (!isEnd);
-        saveTask();
-        scan.close();
+        } while (true);
     }
 
     //loading tasks from file checking errors in case of missing file try to create new for smooth continue.
@@ -182,6 +179,12 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private static void exit(){
+        saveTask();
+        scan.close();
+        System.exit(0);
     }
 
     private static String[][] listTo2DArr(List<String> list) {
