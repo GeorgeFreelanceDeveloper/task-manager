@@ -16,17 +16,17 @@ import java.util.Scanner;
 import static org.example.ConsoleColors.*;
 
 public class Main {
-    private static Scanner scan;
+    private static Scanner scanner;
     private static String[][] tasks;
 
     public static void main(String[] args) {
         System.out.printf("%sStarting Task Manager 1.0%s\n", GREEN_BOLD_BRIGHT, RESET);
         loadTasks();
         displayMenu();
-        scan = new Scanner(System.in);
+        scanner = new Scanner(System.in);
         do {
             System.out.printf("\n%sPlease enter your choice:%s", BLUE_BOLD_BRIGHT, RESET);
-            switch (scan.nextLine().toLowerCase()) {
+            switch (scanner.nextLine().toLowerCase()) {
                 case "add" -> addTask();
                 case "remove" -> removeTask();
                 case "list" -> showTasks();
@@ -96,18 +96,18 @@ public class Main {
 
         System.out.printf("\n%sAdding new task Number.%d:%s\n", GREEN_BOLD_BRIGHT, taskNum, RESET);
         System.out.printf("%sWrite the description of the task:%s ", BLUE_BOLD_BRIGHT, RESET);
-        task[0] = scan.nextLine();
+        task[0] = scanner.nextLine();
 
         System.out.printf("%sWrite the date when task end -in the format %sYYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         task[1] = " %s".formatted(dateChecker());//because space after comma
 
         System.out.printf("%sWrite \"%strue%s\" or \"%sfalse%s\" if task is important or not:%s ", BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
-        while (!scan.hasNext("true") && !scan.hasNext("false")) {
-            scan.nextLine();//for cleaning buffer before new try
+        while (!scanner.hasNext("true") && !scanner.hasNext("false")) {
+            scanner.nextLine();//for cleaning buffer before new try
             System.out.printf("\n%sInvalid option - put only %strue%s or %sfalse%s:%s ", RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
         }
-        task[2] = " %s".formatted(scan.next());//next only because if somebody write something after trze/false then would catch also
-        scan.nextLine();//cleaning buffer
+        task[2] = " %s".formatted(scanner.next());//next only because if somebody write something after trze/false then would catch also
+        scanner.nextLine();//cleaning buffer
         tasks = ArrayUtils.add(tasks, task);
         System.out.printf("%sTask  Number %d added%s\n", GREEN_BOLD_BRIGHT, taskNum, RESET);
     }
@@ -119,7 +119,7 @@ public class Main {
         LocalDate date;
 
         do try {
-            input = scan.nextLine();
+            input = scanner.nextLine();
             date = LocalDate.parse(input);
             if (!date.isBefore(today)) {//date must be at least today if so loop end
                 break;
@@ -140,7 +140,7 @@ public class Main {
         System.out.printf("\n%sWrite the number of the task you want to remove from the list%s\n", BLUE_BOLD_BRIGHT, RESET);
         System.out.printf("%sif you don't know the number of the task write \"%s?%s\" or \"%sexit%s\" to return to the main menu:%s", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         do {
-            input = scan.nextLine().toLowerCase();
+            input = scanner.nextLine().toLowerCase();
             if (NumberUtils.isDigits(input)) {
                 int num = Integer.parseInt(input);//
                 if (num >= 1 && num <= tasks.length) {
@@ -183,7 +183,7 @@ public class Main {
 
     private static void exit(){
         saveTask();
-        scan.close();
+        scanner.close();
         System.exit(0);
     }
 
