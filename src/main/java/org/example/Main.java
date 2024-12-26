@@ -25,14 +25,17 @@ public class Main {
         displayMenu();
         scanner = new Scanner(System.in);
         do {
-            System.out.printf("\n%sPlease enter your choice:%s", BLUE_BOLD_BRIGHT, RESET);
+            System.out.printf("\n%sEnter your choice:%s", BLUE_BOLD_BRIGHT, RESET);
             switch (scanner.nextLine().toLowerCase()) {
                 case "add" -> addTask();
                 case "remove" -> removeTask();
                 case "list" -> showTasks();
                 case "exit" -> exit();
                 case "?" -> displayMenu();
-                default -> System.out.printf("%sInvalid option!%s", RED_BOLD_BRIGHT, RESET);
+                default -> {
+                    System.out.printf("%sInvalid option!%s\n", RED_BOLD_BRIGHT, RESET);
+                    System.out.printf("%sEnter correct options or \"%s?%s\" for menu%s\n",BLUE_BOLD_BRIGHT,YELLOW_BOLD_BRIGHT,BLUE_BOLD_BRIGHT, RESET);
+                }
             }
         } while (true);
     }
