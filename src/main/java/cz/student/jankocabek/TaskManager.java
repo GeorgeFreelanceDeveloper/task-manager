@@ -34,7 +34,7 @@ public class TaskManager {
                 case "?" -> displayMenu();
                 default -> {
                     System.out.printf("%sInvalid option!%s\n", RED_BOLD_BRIGHT, RESET);
-                    System.out.printf("%sEnter correct options or \"%s?%s\" for menu%s\n",BLUE_BOLD_BRIGHT,YELLOW_BOLD_BRIGHT,BLUE_BOLD_BRIGHT, RESET);
+                    System.out.printf("%sEnter correct options or \"%s?%s\" for menu%s\n", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
                 }
             }
         } while (true);
@@ -166,12 +166,12 @@ public class TaskManager {
     private static void saveTasks() {
         final Path pathFile = Paths.get("tasks.csv");
         final var sb = new StringBuilder();
-        for (String[] task : tasks) {
-            for (int i = 0; i < task.length - 1; i++) {
-                sb.append(task[i]).append(",");
-            }
-            sb.append(task[task.length - 1]).append(System.lineSeparator());//after last part shouldn't be "," but only lineSeparator
+
+        for (var task : tasks) {
+            sb.append(String.join(",", task));
+            sb.append(System.lineSeparator());
         }
+
         try {
             Files.writeString(pathFile, sb);
         } catch (IOException e) {
