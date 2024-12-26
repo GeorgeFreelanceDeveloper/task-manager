@@ -26,6 +26,8 @@ public class TaskManager {
     public static void main(final String[] args) {
         init();
 
+        String text = "Test checkStyle";
+
         while (true) {
             printOptions(OPTIONS);
             final var input = scanner.nextLine();
