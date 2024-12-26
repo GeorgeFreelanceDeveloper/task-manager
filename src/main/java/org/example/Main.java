@@ -99,7 +99,7 @@ public class Main {
         task[0] = scanner.nextLine();
 
         System.out.printf("%sWrite the date when task end -in the format %sYYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
-        task[1] = " %s".formatted(dateChecker());//because space after comma
+        task[1] = " %s".formatted(loadAndCheckDate());//because space after comma
 
         System.out.printf("%sWrite \"%strue%s\" or \"%sfalse%s\" if task is important or not:%s ", BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         while (!scanner.hasNext("true") && !scanner.hasNext("false")) {
@@ -113,25 +113,23 @@ public class Main {
     }
 
     //my method for controlling if string is in right format and the date is at least today
-    private static String dateChecker() {
-        final var today = LocalDate.now();
-        String input;
-        LocalDate date;
+    private static String loadAndCheckDate() {
 
-        do try {
-            input = scanner.nextLine();
-            date = LocalDate.parse(input);
-            if (!date.isBefore(today)) {//date must be at least today if so loop end
-                break;
-            }
+
+        while (true) try {
+            final var today = LocalDate.now();
+            final String input = scanner.nextLine();
+            final var date = LocalDate.parse(input);
+            //date must be at least today if so method end and return input
+            if (!date.isBefore(today)) return input;
             System.out.printf("%sThis date already was!!%s\n", RED_BOLD_BRIGHT, RESET);
-            System.out.printf("\n%sWrite date which is at least %sToday:%s ", BLUE_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
+            System.out.printf("\n%sWrite date which is at least %sToday:%s ",
+                    BLUE_BOLD_BRIGHT, RED_BOLD_BRIGHT, RESET);
         } catch (DateTimeParseException e) {
             System.out.printf("%sInvalid date format!! %s\n", RED_BOLD_BRIGHT, RESET);
-            System.out.printf("\n%sWrite date in the format %sYYY-MM-DD%s:%s ", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
+            System.out.printf("\n%sWrite date in the format %sYYY-MM-DD%s:%s ",
+                    BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         }
-        while (true);
-        return input;
     }
 
     private static void removeTask() {
@@ -181,7 +179,7 @@ public class Main {
         }
     }
 
-    private static void exit(){
+    private static void exit() {
         saveTask();
         scanner.close();
         System.exit(0);
