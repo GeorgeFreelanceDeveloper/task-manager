@@ -80,9 +80,8 @@ public class TaskManager {
 
     private static void showTasks() {
         System.out.printf("\n%sTask List:%s\n", GREEN_BOLD_BRIGHT, RESET);
-        String[] task;
         for (int i = 0; i < tasks.length; i++) {//this loop controlling if task is important or not for different colors in output
-            task = tasks[i];
+            final var task = tasks[i];
             switch (task[2].trim()) {
                 case "true" ->
                         System.out.printf("%s%d. %s%s%s\n", GREEN_BOLD_BRIGHT, i + 1, RED_BOLD_BRIGHT, String.join(",", task), RESET);
@@ -117,8 +116,6 @@ public class TaskManager {
 
     //my method for controlling if string is in right format and the date is at least today
     private static String loadAndCheckDate() {
-
-
         while (true) try {
             final var today = LocalDate.now();
             final String input = scanner.nextLine();
@@ -136,12 +133,10 @@ public class TaskManager {
     }
 
     private static void removeTask() {
-        String input;
-
         System.out.printf("\n%sWrite the number of the task you want to remove from the list%s\n", BLUE_BOLD_BRIGHT, RESET);
         System.out.printf("%sif you don't know the number of the task write \"%s?%s\" or \"%sexit%s\" to return to the main menu:%s", BLUE_BOLD_BRIGHT, YELLOW_BOLD_BRIGHT, BLUE_BOLD_BRIGHT, YELLOW_BRIGHT, BLUE_BOLD_BRIGHT, RESET);
         do {
-            input = scanner.nextLine().toLowerCase();
+            final var input = scanner.nextLine().toLowerCase();
             if (NumberUtils.isDigits(input)) {
                 int num = Integer.parseInt(input);//
                 if (num >= 1 && num <= tasks.length) {
@@ -171,7 +166,6 @@ public class TaskManager {
             sb.append(String.join(",", task));
             sb.append(System.lineSeparator());
         }
-
         try {
             Files.writeString(pathFile, sb);
         } catch (IOException e) {
