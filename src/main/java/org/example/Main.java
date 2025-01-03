@@ -1,4 +1,4 @@
-package cz.student.osydorchuk89;
+package org.example;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,49 +6,53 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import cz.common.ConsoleColors;
+public class Main {
 
-public class TaskManager {
-
-    private static List<String> options = new ArrayList<>(List.of("add", "remove", "list", "exit"));
-    private static List<List<String>> tasks = new ArrayList<>();
-    private static Scanner scanner = new Scanner(System.in);
-    private static String TASKS_FILE = "tasks.csv";
+    static List<String> options = new ArrayList<>(List.of("add", "remove", "list", "exit"));
+    static List<List<String>> tasks = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        loadTasks();
+        readTasks("tasks.csv");
+        selectOption();
+    }
+
+    public static void readTasks(String fileName) {
+        Path path = Paths.get(fileName);
+        try {
+            List<String> lines = Files.readAllLines(path);
+            for (String line : lines) {
+                String[] words = line.split(",");
+                tasks.add(new ArrayList<>(List.of(words)));
+            }
+        } catch (IOException e) {
+            System.out.println("File not found.");
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public static void selectOption() {
         System.out.println("Please select an option from the list below: " + ConsoleColors.BLUE);
         for (String option: options) {
             System.out.println(option);
         }
         System.out.println(ConsoleColors.RESET);
-        while (true) {
-            final String option = scanner.nextLine();
+        while (scanner.hasNextLine()) {
+            String option = scanner.nextLine();
+            if (option.equals("exit")) {
+                exit();
+                break;
+            }
             switch (option) {
                 case "add" -> addTask();
                 case "remove" -> removeTask();
                 case "list" -> displayTasks();
-                case "exit" -> exit();
                 default -> System.out.println("Please select a correct option.");
             }
             System.out.println();
             System.out.println("Select next option:");
         }
-    }
 
-    public static void loadTasks() {
-        final Path path = Paths.get(TASKS_FILE);
-        try {
-            List<String> lines = Files.readAllLines(path);
-            for (String line : lines) {
-                final String[] items = line.split(",");
-                tasks.add(new ArrayList<>(List.of(items)));
-            }
-        } catch (IOException e) {
-            System.err.println("Failed to load tasks.csv: " + e.getMessage());
-            System.err.println("Application will work with empty tasks list");
-            e.printStackTrace(System.err);
-        }
     }
 
     public static void displayTasks() {
@@ -59,28 +63,27 @@ public class TaskManager {
 
     public static void addTask() {
         System.out.println("Enter the name of the task");
-        final String taskName = scanner.nextLine();
+        String taskName = scanner.nextLine();
         System.out.println("Enter the due date of the task");
-        final String taskDate = scanner.nextLine();
+        String taskDate = scanner.nextLine();
         System.out.println("Has the task been completed? yes/no");
         String taskStatus = scanner.nextLine();
         while (!taskStatus.equalsIgnoreCase("yes") && !taskStatus.equalsIgnoreCase("no")) {
             System.out.println("Please enter yes or no.");
             taskStatus = scanner.nextLine();
         }
-        final boolean taskCompleted = taskStatus.equalsIgnoreCase("yes");
-        final List<String> task = Arrays.asList(taskName, taskDate, Boolean.toString(taskCompleted));
+        boolean taskCompleted = taskStatus.equalsIgnoreCase("yes");
+        List<String> task = Arrays.asList(taskName, taskDate, Boolean.toString(taskCompleted));
         tasks.add(task);
         System.out.println("Task added: " + task);
     }
 
     public static void removeTask() {
-        displayTasks();
         int taskNumber;
         System.out.println("Enter the number of the task.");
         while (true) {
             try {
-                final String userInput = scanner.nextLine();
+                String userInput = scanner.nextLine();
                 taskNumber = Integer.parseInt(userInput);
                 if (taskNumber > 0 && taskNumber <= tasks.size()) {
                     break;
@@ -90,33 +93,28 @@ public class TaskManager {
                 System.out.println("Please enter the numeric value.");
             }
         }
-        final int taskIndex = taskNumber - 1;
+        int taskIndex = taskNumber - 1;
         tasks.remove(taskIndex);
         System.out.println("Task number " + taskNumber + " removed.");
     }
 
-    public static void saveTasks() {
-        final Path newPath = Paths.get("tasks.csv");
-        final List<String> updatedTasks = new ArrayList<>();
+    public static void exit() {
+        scanner.close();
+        Path newPath = Paths.get("tasks.csv");
+        List<String> updatedTasks = new ArrayList<>();
         try {
             for (List<String> task: tasks) {
-                final var sb = new StringBuilder();
+                var sb = new StringBuilder();
                 for (String word : task) {
-                    sb.append(word).append(", ");
+                    sb.append(word).append(" ");
                 }
                 updatedTasks.add(sb.toString().trim());
             }
             Files.write(newPath, updatedTasks);
         } catch (IOException e) {
-            System.err.println("Unable to save the file.");
+            System.out.println("Unable to save the file.");
             e.printStackTrace(System.err);
         }
-    }
-
-    public static void exit() {
-        scanner.close();
-        saveTasks();
-        System.exit(0);
     }
 
 }
