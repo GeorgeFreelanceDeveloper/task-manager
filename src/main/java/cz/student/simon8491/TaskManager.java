@@ -19,7 +19,7 @@ public class TaskManager {
 
     public static void main(String[] args) {
 
-        tasks = loadDataToTab("tasks.csv");
+        tasks = loadTasks("tasks.csv");
         displayOptions();
         scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
