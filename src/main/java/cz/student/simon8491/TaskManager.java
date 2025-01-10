@@ -23,8 +23,7 @@ public class TaskManager {
         displayOptions();
         scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
-            final var option = scanner.nextLine();
-            switch (option) {
+            switch (scanner.nextLine().toUpperCase() {
                 case "add" -> addTask();
                 case "remove"-> removeTask();
                 case "list" -> taskList();
