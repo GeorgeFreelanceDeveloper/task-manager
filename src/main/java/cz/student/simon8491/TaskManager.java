@@ -23,11 +23,12 @@ public class TaskManager {
         displayOptions();
         scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
-            switch (scanner.nextLine().toUpperCase() {
-                case "add" -> addTask();
-                case "remove"-> removeTask();
-                case "list" -> taskList();
-                case "exit" -> {
+            switch (scanner.nextLine().toUpperCase()) {
+                case "ADD" -> addTask();
+                case "REMOVE"-> removeTask();
+                case "LIST" -> taskList();
+                case "EXIT" -> {
+                    scanner.close();
                     storeData();
                     System.out.println("Data were stored successfully");
                     System.out.println(ConsoleColors.RED + "Sayonara!");
@@ -49,27 +50,26 @@ public class TaskManager {
         System.out.println(ConsoleColors.RESET);
     }
 
-    public static String[][] loadDataToTab(String fileName) {
+    public static String[][] loadTasks(String fileName) {
         Path file = Paths.get(fileName);
         String[][] dataTab;
 
         if (!Files.exists(file)) {
             System.out.println("File does not exist.");
-            System.err.println("-1");
-            System.exit(0);
+            System.exit(1);
         }
         try {
             List<String> lines = Files.readAllLines(file);
             dataTab = new String[lines.size()][];
             for (int i = 0; i < lines.size(); i++) {
                 dataTab[i] = lines.get(i).split(",");
-                System.arraycopy(lines.get(i).split(","), 0, dataTab[i], 0, dataTab[i].length);
+                System.arraycopy(dataTab[i], 0, dataTab[i], 0, dataTab[i].length);
             }
             return dataTab;
         } catch (IOException e) {
             System.err.println("Error reading file.");
-            System.err.println("-1");
             e.printStackTrace(System.err);
+            System.exit(1);
             return null;
         }
     }
@@ -81,7 +81,6 @@ public class TaskManager {
         final var dueDate = scanner.nextLine();
         System.out.println("And lastly, please enter the importance of the task (true/false):");
         final var importance = scanner.nextLine();
-        scanner.close();
 
         tasks = Arrays.copyOf(tasks, tasks.length +1);
         tasks[tasks.length-1] = new String[3];
@@ -93,7 +92,9 @@ public class TaskManager {
     public static void taskList() {
         for (int i = 0; i < tasks.length; i++) {
             System.out.print(i + 1 + ". ");
-Arrays.toString(tasks[i])
+            for (int j = 0; j < tasks[i].length; j++) {
+                System.out.print(tasks[i][j] + " ");
+            }
             System.out.println();
         }
     }
@@ -101,7 +102,6 @@ Arrays.toString(tasks[i])
     public static void removeTask() {
         System.out.println("Please enter the number of the task you would like to remove:");
         var taskNumber = scanner.nextLine();
-        scanner.close();
         int index;
         if (NumberUtils.isParsable(taskNumber)) {
             index = Integer.parseInt(taskNumber);
@@ -134,6 +134,7 @@ Arrays.toString(tasks[i])
         } catch (IOException e) {
             System.err.println("Error writing file.");
             e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 }
