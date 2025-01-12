@@ -23,8 +23,7 @@ public class TaskManager {
         }
         System.out.println(ConsoleColors.RESET);
         while (true) {
-            final String option = scanner.nextLine();
-            switch (option) {
+            switch (scanner.nextLine().toLowerCase()) {
                 case "add" -> addTask();
                 case "remove" -> removeTask();
                 case "list" -> displayTasks();
@@ -48,6 +47,7 @@ public class TaskManager {
             System.err.println("Failed to load tasks.csv: " + e.getMessage());
             System.err.println("Application will work with empty tasks list");
             e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 
@@ -68,8 +68,7 @@ public class TaskManager {
             System.out.println("Please enter yes or no.");
             taskStatus = scanner.nextLine();
         }
-        final boolean taskCompleted = taskStatus.equalsIgnoreCase("yes");
-        final List<String> task = Arrays.asList(taskName, taskDate, Boolean.toString(taskCompleted));
+        final List<String> task = Arrays.asList(taskName, taskDate, taskStatus);
         tasks.add(task);
         System.out.println("Task added: " + task);
     }
@@ -110,6 +109,7 @@ public class TaskManager {
         } catch (IOException e) {
             System.err.println("Unable to save the file.");
             e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 
