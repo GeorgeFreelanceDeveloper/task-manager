@@ -10,32 +10,20 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-
+import cz.common.ConsoleColors;
 import org.apache.commons.lang3.ArrayUtils;
 
-public class Main {
+public class TaskManager {
     static final String fileName = "tasks.csv";  //soubor, ze ktereho ziskavame informace
     static final String[] OPTIONS = {"add", "remove", "list", "exit"};
     static String[][] tasks; // pole, do ktereho se zapisuji informace ze souboru
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) { //hlavni metoda, ktera načte data ze souboru a zavola "setOptions" a spusti tim program
-        retrieveData();
-        setOptions();
-    }
-
-    public static void displayOptions() { //metoda, ktera nam vypise vsechny moznosti
-        System.out.println(ConsoleColors.BLUE + "Please select an option: ");
-        for (String option : OPTIONS) {
-            System.out.println(ConsoleColors.RESET + option);
-        }
-    }
-
-    public static void setOptions() { //metoda, ktera umoznuje uzivateli vybrat vystup
+        loadData();
         while (true) {
             displayOptions();
-            String input = scanner.nextLine();
-            switch (input.toLowerCase()) {
+            switch (scanner.nextLine().toLowerCase()) {
                 case "add" -> addTask();
                 case "remove" -> removeTask();
                 case "list" -> showList();
@@ -44,8 +32,15 @@ public class Main {
             }
         }
     }
+    public static void displayOptions() { //metoda, ktera nam vypise vsechny moznosti
+        System.out.println(ConsoleColors.BLUE + "Please select an option: ");
+        for (String option : OPTIONS) {
+            System.out.println(ConsoleColors.RESET + option);
 
-    public static void retrieveData() { //metoda, ktera ziskava informace ze souboru a zapisuje je do pole "tasks"
+        }
+    }
+
+    public static void loadData() { //metoda, ktera ziskava informace ze souboru a zapisuje je do pole "tasks"
         try {
             final var lines = Files.readAllLines(Path.of("tasks.csv"));
 
@@ -96,6 +91,7 @@ public class Main {
         } catch (IOException e) {
             System.err.println("Saving failed.");
             e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 
