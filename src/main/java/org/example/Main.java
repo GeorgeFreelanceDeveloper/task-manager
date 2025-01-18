@@ -1,6 +1,6 @@
 package org.example;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,24 +17,25 @@ import java.util.stream.Collectors;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final ArrayList<Task> tasks = new ArrayList<>();
-    private static final String SAVE_FILE = "saved_tasks.csv";
-    private static boolean running = true;
+    private static final String SAVE_FILE = "tasks.csv";
+    private static final String[] allowedCommands = {"add", "delete", "list", "info", "exit", "view", "update"};
 
     public static void main(String[] args) {
-        String[] allowedCommands = {"add", "delete", "list", "info", "save", "view", "update"};
-
-        Main.info(allowedCommands);
+        displayAllowedCommands(allowedCommands);
         loadTasks();
 
-        while (running) {
+        while (true) {
             System.out.println("Waiting for your next command:");
             String command = scanner.nextLine();
             switch (command) {
                 case "add" -> addTask();
                 case "delete" -> deleteTask();
                 case "list" -> listTasks();
-                case "info" -> info(allowedCommands);
-                case "save" -> saveTasks();
+                case "info" -> displayAllowedCommands(allowedCommands);
+                case "exit" -> {
+                    saveTasks();
+                    System.exit(0);
+                }
                 case "view" -> viewTask();
                 default -> System.out.println("Unknown command, for command list type info");
             }
@@ -45,7 +46,7 @@ public class Main {
         HIGH, MEDIUM, LOW
     }
 
-    public static void info(String[] allowedCommands) {
+    public static void displayAllowedCommands(String[] allowedCommands) {
         System.out.println("Allowed system commands:");
         for (String item : allowedCommands) {
             System.out.println("# " + item);
@@ -53,13 +54,13 @@ public class Main {
     }
 
     public static void addTask() {
-        String description = addTaskInput(
+        final String description = addTaskInput(
                 "Enter new task name: ",
                 "Task name cannot be empty. Enter a valid name.",
                 input -> !input.isEmpty()
         );
 
-        Priority priority = Priority.valueOf(
+        final Priority priority = Priority.valueOf(
                 addTaskInput(
                         "Enter task priority (high, medium, low): ",
                         "Invalid priority. Please enter a valid option.",
@@ -67,7 +68,7 @@ public class Main {
                 ).toUpperCase()
         );
 
-        LocalDate dueDate = LocalDate.parse(
+        final LocalDate dueDate = LocalDate.parse(
                 addTaskInput(
                         "Enter the due date (YYYY-MM-DD): ",
                         "Invalid date format. Please enter a valid format.",
@@ -82,7 +83,7 @@ public class Main {
                 )
         );
 
-        Task task = new Task(description, priority, dueDate);
+        final Task task = new Task(description, priority, dueDate);
         tasks.add(task);
         System.out.println("Task has been added");
     }
@@ -93,7 +94,7 @@ public class Main {
         while (true) {
             try {
                 System.out.println("Write id of a task you want to delete (number before task description):");
-                int inputId = Integer.parseInt(scanner.nextLine());
+                final int inputId = Integer.parseInt(scanner.nextLine());
                 boolean taskFound = false;
 
                 for (int i = 0; i < tasks.size(); i++) {
@@ -103,7 +104,7 @@ public class Main {
                         System.out.println(tasks.get(i));
 
                         while (true) {
-                            String inputDelete = scanner.nextLine();
+                            final String inputDelete = scanner.nextLine();
 
                             if (inputDelete.equalsIgnoreCase("y") || inputDelete.isEmpty()) {
                                 tasks.remove(i);
@@ -148,7 +149,7 @@ public class Main {
     private static void viewTask() {
         boolean exists = false;
         System.out.println("Type ID of the task");
-        int input = scanner.nextInt();
+        final int input = scanner.nextInt();
         for (Task task : tasks) {
             if (task.getId() == input) {
                 System.out.println("Task info:");
@@ -166,8 +167,8 @@ public class Main {
     }
 
     private static void saveTasks() {
-        Path path = Paths.get(SAVE_FILE);
-        List<String> lines = tasks.stream()
+        final Path path = Paths.get(SAVE_FILE);
+        final List<String> lines = tasks.stream()
                 .map(task -> task.getName() + "," + task.getPriority() + "," + task.getDueDate())
                 .collect(Collectors.toList());
         try {
@@ -175,14 +176,14 @@ public class Main {
             System.out.println("List has been saved to " + SAVE_FILE);
             scanner.close();
         } catch (IOException e) {
-            System.out.println("Error has occurred while saving tasks: " + e.getMessage());
+            System.err.println("Error has occurred while saving tasks: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
         }
-
-        running = false;
     }
 
     private static void loadTasks() {
-        Path path = Paths.get(SAVE_FILE);
+        final Path path = Paths.get(SAVE_FILE);
         if (!Files.exists(path)) {
             System.out.println("No save file found. Starting with an empty list.");
             System.out.println("If you think this is a mistake, make sure there is a file in the correct directory.");
@@ -194,15 +195,17 @@ public class Main {
             for (String line : lines) {
                 String[] parts = line.split(",");
                 if (parts.length == 3) {
-                    String description = parts[0];
-                    Priority priority = Priority.valueOf(parts[1].toUpperCase());
-                    LocalDate dueDate = LocalDate.parse(parts[2], DateTimeFormatter.ISO_LOCAL_DATE);
+                    final String description = parts[0];
+                    final Priority priority = Priority.valueOf(parts[1].toUpperCase());
+                    final LocalDate dueDate = LocalDate.parse(parts[2], DateTimeFormatter.ISO_LOCAL_DATE);
                     tasks.add(new Task(description, priority, dueDate));
                 }
             }
             System.out.println("Tasks have been loaded.");
         } catch (IOException e) {
-            System.out.println("Error has occurred while loading tasks: " + e.getMessage());
+            System.err.println("Error has occurred while loading tasks: " + e.getMessage());
+            System.err.println("Starting with an empty list");
+            e.printStackTrace();
         }
     }
 
