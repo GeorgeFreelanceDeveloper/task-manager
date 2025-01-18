@@ -1,4 +1,4 @@
-package org.example;
+package cz.student.adamos204;
 
 /**
  * https://stackoverflow.com/a/45444716

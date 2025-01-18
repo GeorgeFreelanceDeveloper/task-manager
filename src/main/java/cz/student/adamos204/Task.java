@@ -1,4 +1,4 @@
-package org.example;
+package cz.student.adamos204;
 
 import java.time.LocalDate;
 
