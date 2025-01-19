@@ -20,7 +20,7 @@ public class TaskManager {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) { //hlavni metoda, ktera načte data ze souboru a zavola "setOptions" a spusti tim program
-        loadData();
+        loadTasks();
         while (true) {
             displayOptions();
             switch (scanner.nextLine().toLowerCase()) {
@@ -40,7 +40,7 @@ public class TaskManager {
         }
     }
 
-    public static void loadData() { //metoda, ktera ziskava informace ze souboru a zapisuje je do pole "tasks"
+    public static void loadTasks() { //metoda, ktera ziskava informace ze souboru a zapisuje je do pole "tasks"
         try {
             final var lines = Files.readAllLines(Path.of("tasks.csv"));
 
@@ -51,6 +51,7 @@ public class TaskManager {
         } catch (IOException e) {
             System.err.println("Failed to load tasks.csv");
             e.printStackTrace(System.err);
+            System.exit(1);
         }
     }
 
